@@ -3,24 +3,29 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 import requests
-import os
 
-# Function to download the model from GitHub
+# Function to download the models from GitHub
 @st.cache_resource(show_spinner=True)
-def download_model():
-    url = 'https://github.com/siang5978/FaceModel/raw/main/race_model.keras'  # Replace with your GitHub link
+def download_model(model_name):
+    url = f'https://github.com/siang5978/FaceModel/raw/main/{model_name}.keras'  # Replace with your GitHub link
     response = requests.get(url)
     
     # Save the model to a local file
-    model_path = 'race_model.keras'
+    model_path = f'{model_name}.keras'
     with open(model_path, 'wb') as file:
         file.write(response.content)
     
     return model_path
 
-# Download the model
-model_path = download_model()
-model = load_model(model_path)
+# Download the models
+age_model_path = download_model('age_model')
+gender_model_path = download_model('gender_model')
+race_model_path = download_model('race_model')
+
+# Load the models
+age_model = load_model(age_model_path)
+gender_model = load_model(gender_model_path)
+race_model = load_model(race_model_path)
 
 # Function to load and preprocess the image
 def preprocess_image(image):
@@ -32,7 +37,7 @@ def preprocess_image(image):
     return img_array
 
 # Create Streamlit interface
-st.title("Race Classification Model")
+st.title("Age, Gender, and Race Classification Model")
 
 # Upload image through Streamlit
 uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
@@ -44,12 +49,22 @@ if uploaded_image is not None:
     # Display the uploaded image
     st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
 
-    # Make prediction
-    predictions = model.predict(img_array)
+    # Make predictions for age, gender, and race
+    age_prediction = age_model.predict(img_array)
+    gender_prediction = gender_model.predict(img_array)
+    race_prediction = race_model.predict(img_array)
+
+    # Interpret results
+    age_groups = ['0-8', '9-18', '19-50', '50+']
+    gender_classes = ['Male', 'Female']
     race_classes = ['White', 'Black', 'Asian', 'Indian']
 
-    # Get the predicted race
-    predicted_race = race_classes[np.argmax(predictions)]
+    # Get the predicted age group, gender, and race
+    predicted_age = age_groups[np.argmax(age_prediction)]
+    predicted_gender = gender_classes[round(gender_prediction[0][0])]  # Binary prediction
+    predicted_race = race_classes[np.argmax(race_prediction)]
 
-    # Display the result
+    # Display the results
+    st.write(f"Predicted Age Group: **{predicted_age}**")
+    st.write(f"Predicted Gender: **{predicted_gender}**")
     st.write(f"Predicted Race: **{predicted_race}**")
