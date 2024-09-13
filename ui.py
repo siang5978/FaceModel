@@ -5,7 +5,6 @@ import numpy as np
 import requests
 import cv2
 from PIL import Image
-import io
 
 # Function to download the models from GitHub
 @st.cache_resource(show_spinner=True)
