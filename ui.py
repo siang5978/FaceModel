@@ -35,7 +35,6 @@ def load_and_check_model(model_path):
         return None
     try:
         model = load_model(model_path)
-        st.write(f"Successfully loaded model from {model_path}")
         return model
     except ValueError as e:
         st.error(f"Error loading model from {model_path}: {e}")
@@ -49,19 +48,6 @@ race_model_path = download_model('race_model')
 age_model = load_and_check_model(age_model_path)
 gender_model = load_and_check_model(gender_model_path)
 race_model = load_and_check_model(race_model_path)
-
-# Print model summaries (optional)
-if age_model:
-    st.write("Age model summary:")
-    age_model.summary()
-
-if gender_model:
-    st.write("Gender model summary:")
-    gender_model.summary()
-
-if race_model:
-    st.write("Race model summary:")
-    race_model.summary()
 
 # Function to preprocess the image
 def preprocess_image(image):
