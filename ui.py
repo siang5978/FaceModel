@@ -3,8 +3,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 import requests
-import cv2 
-from PIL import Image
+
 
 # Function to download the models from GitHub
 @st.cache_resource(show_spinner=True)
