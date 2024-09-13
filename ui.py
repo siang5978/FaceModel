@@ -31,11 +31,6 @@ def download_model(model_name):
     
     return model_path
 
-# Download the models
-age_model_path = download_model('age_model')
-gender_model_path = download_model('gender_model')
-race_model_path = download_model('race_model')
-
 # Function to load and check models
 def load_and_check_model(model_path):
     if model_path is None:
@@ -49,14 +44,17 @@ def load_and_check_model(model_path):
         st.error(f"Error loading model from {model_path}: {e}")
         return None
 
-# Load the models
+# Download and load the models
+age_model_path = download_model('age_model')
+gender_model_path = download_model('gender_model')
+race_model_path = download_model('race_model')
+
 age_model = load_and_check_model(age_model_path)
 gender_model = load_and_check_model(gender_model_path)
 race_model = load_and_check_model(race_model_path)
 
 # Function to preprocess the image
 def preprocess_image(image):
-    # Convert the PIL Image to a numpy array
     img_array = img_to_array(image)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.0  # Normalize the image
@@ -85,6 +83,9 @@ uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"]
 if uploaded_image is not None:
     # Convert the uploaded file to a PIL Image
     image = Image.open(uploaded_image)
+
+    # Display the original uploaded image
+    st.image(image, caption="Uploaded Image", use_column_width=True)
 
     # Detect faces in the image
     faces = detect_face(image)
