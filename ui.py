@@ -3,6 +3,8 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 import requests
+import cv2
+from PIL import Image
 
 # Function to download the models from GitHub
 @st.cache_resource(show_spinner=True)
@@ -36,6 +38,20 @@ def preprocess_image(image):
     img_array /= 255.0  # Normalize the image
     return img_array
 
+# Function to detect faces using OpenCV Haar cascades
+def detect_face(image):
+    # Convert the image to a format suitable for OpenCV
+    img_np = np.array(image)
+    gray = cv2.cvtColor(img_np, cv2.COLOR_RGB2GRAY)
+
+    # Load the Haar cascade for face detection
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+    return faces
+
 # Create Streamlit interface
 st.title("Age, Gender, and Race Classification Model")
 
@@ -43,28 +59,42 @@ st.title("Age, Gender, and Race Classification Model")
 uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
 if uploaded_image is not None:
-    # Preprocess the image
-    img_array = preprocess_image(uploaded_image)
+    # Convert the uploaded file to a PIL Image
+    image = Image.open(uploaded_image)
 
-    # Display the uploaded image
-    st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
+    # Detect faces in the image
+    faces = detect_face(image)
 
-    # Make predictions for age, gender, and race
-    age_prediction = age_model.predict(img_array)
-    gender_prediction = gender_model.predict(img_array)
-    race_prediction = race_model.predict(img_array)
+    if len(faces) == 0:
+        st.write("No face detected in the image.")
+    else:
+        # If faces are detected, crop and process each face
+        for (x, y, w, h) in faces:
+            # Crop the face region
+            face_img = image.crop((x, y, x+w, y+h))
+            
+            # Preprocess the image for the model
+            img_array = preprocess_image(face_img)
 
-    # Interpret results
-    age_groups = ['0-8', '9-18', '19-50', '50+']
-    gender_classes = ['Male', 'Female']
-    race_classes = ['White', 'Black', 'Asian', 'Indian']
+            # Display the face image
+            st.image(face_img, caption="Detected Face", use_column_width=True)
 
-    # Get the predicted age group, gender, and race
-    predicted_age = age_groups[np.argmax(age_prediction)]
-    predicted_gender = gender_classes[round(gender_prediction[0][0])]  # Binary prediction
-    predicted_race = race_classes[np.argmax(race_prediction)]
+            # Make predictions for age, gender, and race
+            age_prediction = age_model.predict(img_array)
+            gender_prediction = gender_model.predict(img_array)
+            race_prediction = race_model.predict(img_array)
 
-    # Display the results
-    st.write(f"Predicted Age Group: **{predicted_age}**")
-    st.write(f"Predicted Gender: **{predicted_gender}**")
-    st.write(f"Predicted Race: **{predicted_race}**")
+            # Interpret results
+            age_groups = ['0-8', '9-18', '19-50', '50+']
+            gender_classes = ['Male', 'Female']
+            race_classes = ['White', 'Black', 'Asian', 'Indian']
+
+            # Get the predicted age group, gender, and race
+            predicted_age = age_groups[np.argmax(age_prediction)]
+            predicted_gender = gender_classes[round(gender_prediction[0][0])]  # Binary prediction
+            predicted_race = race_classes[np.argmax(race_prediction)]
+
+            # Display the results
+            st.write(f"Predicted Age Group: **{predicted_age}**")
+            st.write(f"Predicted Gender: **{predicted_gender}**")
+            st.write(f"Predicted Race: **{predicted_race}**")
