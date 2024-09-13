@@ -32,9 +32,7 @@ race_model = load_model(race_model_path)
 
 # Function to load and preprocess the image
 def preprocess_image(image):
-    target_size = (200, 200)  # Resize to the same size as used for training
-    img = load_img(image, target_size=target_size)
-    img_array = img_to_array(img)
+    img_array = img_to_array(image)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.0  # Normalize the image
     return img_array
