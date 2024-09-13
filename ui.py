@@ -68,7 +68,7 @@ if uploaded_image is not None:
     if len(faces) == 0:
         st.write("No face detected in the image.")
     else:
-        # If faces are detected, crop and process each face
+        # Process each detected face
         for (x, y, w, h) in faces:
             # Crop the face region
             face_img = image.crop((x, y, x+w, y+h))
