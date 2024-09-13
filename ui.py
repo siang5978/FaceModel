@@ -10,7 +10,7 @@ import io
 # Function to download the models from GitHub
 @st.cache_resource(show_spinner=True)
 def download_model(model_name):
-    url = f'https://github.com/yourusername/your-repository/raw/main/{model_name}.keras'  # Replace with your GitHub link
+    url = f'https://github.com/siang5978/FaceModel/raw/main/{model_name}.keras'  # Replace with your GitHub link
     response = requests.get(url)
     
     # Save the model to a local file
