@@ -1,6 +1,6 @@
 import streamlit as st
 from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
+from tensorflow.keras.preprocessing.image import img_to_array
 import numpy as np
 import requests
 import cv2
@@ -56,9 +56,8 @@ race_model = load_and_check_model(race_model_path)
 
 # Function to preprocess the image
 def preprocess_image(image):
-    target_size = (200, 200)  # Resize to the same size as used for training
-    img = load_img(image, target_size=target_size)
-    img_array = img_to_array(img)
+    # Convert the PIL Image to a numpy array
+    img_array = img_to_array(image)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.0  # Normalize the image
     return img_array
