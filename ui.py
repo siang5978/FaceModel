@@ -11,7 +11,7 @@ import os
 # Function to download the models from GitHub
 @st.cache_resource(show_spinner=True)
 def download_model(model_name):
-    url = f'https://github.com/siang5978/FaceModel/raw/main/{model_name}.keras'
+    url = 'https://github.com/siang5978/FaceModel/raw/main/{model_name}.keras'
     response = requests.get(url)
     
     if response.status_code != 200:
