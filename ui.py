@@ -13,19 +13,9 @@ import os
 def download_model(model_name):
     url = f'https://github.com/siang5978/FaceModel/raw/main/{model_name}.keras'
     response = requests.get(url)
-    
-    if response.status_code != 200:
-        st.error(f"Failed to download {model_name}.keras. Status code: {response.status_code}")
-        return None
-    
     model_path = f'{model_name}.keras'
     with open(model_path, 'wb') as file:
         file.write(response.content)
-    
-    if not os.path.exists(model_path):
-        st.error(f"File not found after download: {model_path}")
-        return None
-    
     return model_path
 
 # Function to load and check models
