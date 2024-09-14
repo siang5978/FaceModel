@@ -18,7 +18,7 @@ def download_model(model_name):
         st.error(f"Failed to download {model_name}.keras. Status code: {response.status_code}")
         return None
     
-    model_path = f'{model_name}.keras'
+    model_path = '{model_name}.keras'
     with open(model_path, 'wb') as file:
         file.write(response.content)
     
