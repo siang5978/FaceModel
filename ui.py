@@ -11,24 +11,17 @@ import os
 # Function to download the models from GitHub
 @st.cache_resource(show_spinner=True)
 def download_model(model_name):
-    url = f'https://github.com/siang5978/FaceModel/raw/main/{model_name}.keras'
+    url = 'https://github.com/siang5978/FaceModel/raw/main/{model_name}.keras'
     response = requests.get(url)
-    model_path = f'{model_name}.keras'
+    model_path = '{model_name}.keras'
     with open(model_path, 'wb') as file:
         file.write(response.content)
     return model_path
 
 # Function to load and check models
 def load_and_check_model(model_path):
-    if model_path is None:
-        st.error(f"Model file not available: {model_path}")
-        return None
-    try:
         model = load_model(model_path)
         return model
-    except ValueError as e:
-        st.error(f"Error loading model from {model_path}: {e}")
-        return None
 
 # Download and load the models
 age_model_path = download_model('age_model')
